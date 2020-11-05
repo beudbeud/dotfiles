@@ -1,0 +1,31 @@
+#!/bin/bash
+
+if [ "$(playerctl --player=spotifyd status >>/dev/null 2>&1; echo $?)" == "1" ]
+then
+	polybar-msg hook playpause 4 >>/dev/null 2>&1
+	exit 1
+fi
+
+if [ "$1" == "play-pause" ]
+then
+	if [ "$(playerctl --player=spotifyd status)" == "Stopped" ]
+	then
+		polybar-msg hook playpause 2
+		playerctl --player=spotifyd play-pause
+		exit 0
+	else
+		polybar-msg hook playpause 1
+		playerctl --player=spotifyd play-pause
+	fi
+fi
+
+if [ "$(playerctl status)" == "Playing" ]
+then	
+	polybar-msg hook playpause 2 >>/dev/null 2>&1
+	title=$(playerctl metadata xesam:title)
+	artist=$(playerctl metadata xesam:artist)
+	echo "$title | $artist"
+else
+	polybar-msg hook playpause 3 >>/dev/null 2>&1
+	echo "Music Stopped"
+fi
